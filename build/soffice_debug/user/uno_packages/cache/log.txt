@@ -1,0 +1,35 @@
+###### Progress log entry 2013-09-05 14:22:55 ######
+ERROR: (com.sun.star.lang.IllegalArgumentException) { { { Message = "There is no such extension deployed: ga.gramad\X00f3ir.AnGramad\X00f3ir", Context = (com.sun.star.uno.XInterface) @-4fe2ae8c } }, ArgumentPosition = (short) -1 }
+ERROR: (com.sun.star.lang.IllegalArgumentException) { { { Message = "There is no such extension deployed: ga.gramad\X00f3ir.AnGramad\X00f3ir", Context = (com.sun.star.uno.XInterface) @-4fe2ae8c } }, ArgumentPosition = (short) -1 }
+Copying: AnGramadóir.oxt
+###### Progress log entry 2013-09-05 14:27:01 ######
+Cóipeáil: AnGramadóir.oxt
+###### Progress log entry 2013-09-05 14:49:21 ######
+Cóipeáil: AnGramadóir.oxt
+###### Progress log entry 2013-09-05 14:56:54 ######
+Cóipeáil: AnGramadóir.oxt
+###### Progress log entry 2013-09-05 15:06:15 ######
+Cóipeáil: AnGramadóir.oxt
+###### Progress log entry 2013-09-05 15:11:55 ######
+Cóipeáil: AnGramadóir.oxt
+###### Progress log entry 2013-09-05 15:27:07 ######
+Cóipeáil: AnGramadóir.oxt
+###### Progress log entry 2013-09-06 13:43:23 ######
+Cóipeáil: AnGramadóir.oxt
+###### Progress log entry 2013-09-06 13:53:52 ######
+Cóipeáil: AnGramadóir.oxt
+###### Progress log entry 2013-09-06 14:03:52 ######
+Cóipeáil: AnGramadóir.oxt
+###### Progress log entry 2013-09-10 16:39:22 ######
+Cóipeáil: AnGramadóir.oxt
+###### Progress log entry 2013-09-11 01:19:03 ######
+Cóipeáil: AnGramadóir.oxt
+###### Progress log entry 2013-09-11 09:17:06 ######
+Cóipeáil: AnGramadóir.oxt
+###### Progress log entry 2013-09-11 09:34:19 ######
+Cóipeáil: AnGramadóir.oxt
+###### Progress log entry 2013-09-11 09:44:36 ######
+Cóipeáil: AnGramadóir.oxt
+###### Progress log entry 2013-09-11 10:01:06 ######
+Cóipeáil: AnGramadóir.oxt
+###### Progress log entry 2013-09-11 10:01:53 ######

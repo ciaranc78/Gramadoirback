@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Ant-Version: Apache Ant 1.7.1
+Created-By: 23.7-b01 (Oracle Corporation)
+UNO-Type-Path: 
+RegistrationClassName: ga.gramadóir.Main
+Class-Path: lib/bootstrapconnector.jar lib/java_uno.jar lib/unoloader.
+ jar
+
