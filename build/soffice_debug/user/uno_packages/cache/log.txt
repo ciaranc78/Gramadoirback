@@ -1,35 +1,43 @@
-###### Progress log entry 2013-09-05 14:22:55 ######
-ERROR: (com.sun.star.lang.IllegalArgumentException) { { { Message = "There is no such extension deployed: ga.gramad\X00f3ir.AnGramad\X00f3ir", Context = (com.sun.star.uno.XInterface) @-4fe2ae8c } }, ArgumentPosition = (short) -1 }
-ERROR: (com.sun.star.lang.IllegalArgumentException) { { { Message = "There is no such extension deployed: ga.gramad\X00f3ir.AnGramad\X00f3ir", Context = (com.sun.star.uno.XInterface) @-4fe2ae8c } }, ArgumentPosition = (short) -1 }
+###### Progress log entry 2013-09-17 17:08:39 ######
+Reinstalling all deployed packages...
+###### Progress log entry 2013-09-17 17:08:49 ######
+ERROR: (com.sun.star.lang.IllegalArgumentException) { { { Message = "There is no such extension deployed: ga.gramad\X00f3ir.AnGramad\X00f3ir", Context = (com.sun.star.uno.XInterface) @1a8f4f0 } }, ArgumentPosition = (short) -1 }
+ERROR: (com.sun.star.lang.IllegalArgumentException) { { { Message = "There is no such extension deployed: ga.gramad\X00f3ir.AnGramad\X00f3ir", Context = (com.sun.star.uno.XInterface) @1a8f4f0 } }, ArgumentPosition = (short) -1 }
 Copying: AnGramadóir.oxt
-###### Progress log entry 2013-09-05 14:27:01 ######
-Cóipeáil: AnGramadóir.oxt
-###### Progress log entry 2013-09-05 14:49:21 ######
-Cóipeáil: AnGramadóir.oxt
-###### Progress log entry 2013-09-05 14:56:54 ######
-Cóipeáil: AnGramadóir.oxt
-###### Progress log entry 2013-09-05 15:06:15 ######
-Cóipeáil: AnGramadóir.oxt
-###### Progress log entry 2013-09-05 15:11:55 ######
-Cóipeáil: AnGramadóir.oxt
-###### Progress log entry 2013-09-05 15:27:07 ######
-Cóipeáil: AnGramadóir.oxt
-###### Progress log entry 2013-09-06 13:43:23 ######
-Cóipeáil: AnGramadóir.oxt
-###### Progress log entry 2013-09-06 13:53:52 ######
-Cóipeáil: AnGramadóir.oxt
-###### Progress log entry 2013-09-06 14:03:52 ######
-Cóipeáil: AnGramadóir.oxt
-###### Progress log entry 2013-09-10 16:39:22 ######
-Cóipeáil: AnGramadóir.oxt
-###### Progress log entry 2013-09-11 01:19:03 ######
-Cóipeáil: AnGramadóir.oxt
-###### Progress log entry 2013-09-11 09:17:06 ######
-Cóipeáil: AnGramadóir.oxt
-###### Progress log entry 2013-09-11 09:34:19 ######
-Cóipeáil: AnGramadóir.oxt
-###### Progress log entry 2013-09-11 09:44:36 ######
-Cóipeáil: AnGramadóir.oxt
-###### Progress log entry 2013-09-11 10:01:06 ######
-Cóipeáil: AnGramadóir.oxt
-###### Progress log entry 2013-09-11 10:01:53 ######
+###### Progress log entry 2013-09-17 17:17:35 ######
+Copying: AnGramadóir.oxt
+###### Progress log entry 2013-09-17 17:21:06 ######
+Copying: AnGramadóir.oxt
+###### Progress log entry 2013-09-17 17:29:35 ######
+Copying: AnGramadóir.oxt
+###### Progress log entry 2013-09-17 17:39:49 ######
+Copying: AnGramadóir.oxt
+###### Progress log entry 2013-09-17 17:42:08 ######
+Copying: AnGramadóir.oxt
+###### Progress log entry 2013-09-17 17:45:18 ######
+Copying: AnGramadóir.oxt
+###### Progress log entry 2013-09-17 18:02:48 ######
+Copying: AnGramadóir.oxt
+###### Progress log entry 2013-09-17 18:21:38 ######
+Copying: AnGramadóir.oxt
+###### Progress log entry 2013-09-17 18:23:52 ######
+Copying: AnGramadóir.oxt
+###### Progress log entry 2013-09-17 18:30:19 ######
+Copying: AnGramadóir.oxt
+###### Progress log entry 2013-09-17 18:56:49 ######
+Copying: AnGramadóir.oxt
+###### Progress log entry 2013-09-17 22:53:07 ######
+Copying: AnGramadóir.oxt
+###### Progress log entry 2013-09-17 22:54:58 ######
+Copying: AnGramadóir.oxt
+###### Progress log entry 2013-09-17 23:07:45 ######
+Copying: AnGramadóir.oxt
+###### Progress log entry 2013-09-17 23:11:14 ######
+Copying: AnGramadóir.oxt
+###### Progress log entry 2013-09-17 23:21:22 ######
+Copying: AnGramadóir.oxt
+###### Progress log entry 2013-09-17 23:21:38 ######
+###### Progress log entry 2013-09-17 23:55:21 ######
+Copying: AnGramadóir.oxt
+###### Progress log entry 2013-09-18 00:23:33 ######
+Copying: AnGramadóir.oxt

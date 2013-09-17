@@ -28,11 +28,9 @@ import com.sun.star.linguistic2.XProofreader;
 import com.sun.star.registry.XRegistryKey;
 import com.sun.star.task.XJobExecutor;
 import com.sun.star.uno.XComponentContext;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 import javax.swing.JOptionPane;
 
@@ -50,12 +48,16 @@ public class Main extends WeakBase implements XJobExecutor,
     private int offset=0;
     private boolean newParagraph=true;
     private String previousDocID="";
-    private boolean ignoreOnce=false;
     private boolean changed=false;
     private String originalText="";
     private String endOfText="";
     private String startOfText="";
-    private SingleProofreadingError emptyError = new SingleProofreadingError();
+    private Hashtable<Integer, String> ignoreOnceErrors=new Hashtable<Integer, String>();
+    private ArrayList<String> ignoreRuleErrors=new ArrayList<String>();
+    private SingleProofreadingError[] emptyError = new SingleProofreadingError[0];
+    private SingleProofreadingError originalError = new SingleProofreadingError();
+    private boolean ignoreRule=false;
+    private String oldSentence="";
 
 
 
@@ -94,78 +96,96 @@ public class Main extends WeakBase implements XJobExecutor,
 
     public Main(){
     }
+    public final ProofreadingResult doProofreading(final String docID,
+            final String paraText, final Locale locale, final int startOfSentencePos,
+                    final int nSuggestedBehindEndOfSentencePosition,
+                            final PropertyValue[] props) {
 
+        String text=paraText.replaceAll("[^\\sa-zA-Z0-9áúíÉéóÓÁÍÚ,.-]","*").trim();
+        String sentence=text.substring(startOfSentencePos, nSuggestedBehindEndOfSentencePosition);
+        if(sentence.equals(oldSentence) && (ignoreRule==false)){
+            ignoreOnceErrors.put(originalError.nErrorStart, originalError.aRuleIdentifier);
+        }
+        oldSentence=sentence;
+        final ProofreadingResult paRes = new ProofreadingResult();
+        try {
+            paRes.nStartOfSentencePosition = startOfSentencePos;
+            paRes.xProofreader = this;
+            paRes.aLocale = locale;
+            paRes.aDocumentIdentifier = docID;
+            paRes.aText = text;
+            paRes.aProperties = props;
+            paRes.aErrors=getError(docID, text);
+
+            originalText=text;
+            if(paRes.aErrors.length > 0)
+              originalError=paRes.aErrors[0];
+            ignoreRule=false;
+            return paRes;
+        } catch (final Throwable t) {
+             showError(t);
+             return paRes;
+        }
+    }
+    /*
+     *   abstract method ignoreRule from XProofReader
+     *    -- write selected word to .neamhshuim
+     *
+     */
+
+    @Override
+    public void ignoreRule(String word, Locale locale) throws IllegalArgumentException{
+        ignoreRuleErrors.add(word);
+        ignoreRule=true;
+    }
 
 
     private synchronized SingleProofreadingError[] getError(String docID, String text){
-        SingleProofreadingError error=checkForErrors(docID, text);
-        return error;
-    }
-    private synchronized boolean checkForErrors(String docID, String text){
-
-        if(text.isEmpty()){
-            return emptyError;
-        }
-        else if (errors.isEmpty()){
-            errors=gram.checkGrammer(text);
-        }
-        else if ((!errors.isEmpty()) && (isNewParagraph(text))){
-            errors=gram.checkGrammer(text);
-        }
-        else{
-            errors=getNextError();
-        }
-
+       
+        errors=gram.checkGrammer(text, ignoreOnceErrors, ignoreRuleErrors);
         SingleProofreadingError[] errorArray = new SingleProofreadingError[errors.size()];
         errorArray=errors.toArray(errorArray);
-
-
-      return errorArray;
+        return errorArray;
     }
 
     private boolean isNewParagraph(String text){
 
         if((text.startsWith(startOfText)) && (text.endsWith(endOfText))){
-           int errorStartPoint=errors.get(0).nErrorStart;
-           int errorEndPoint=(errorStartPoint+errors.get(0).nErrorLength);
-           startOfText=text.substring(0, errorStartPoint);
-           endOfText=text.substring(errorEndPoint);
-           newParagraph=false;
+            int errorStartPoint=errors.get(0).nErrorStart;
+            int errorEndPoint=(errorStartPoint+errors.get(0).nErrorLength);
+            startOfText=text.substring(0, errorStartPoint);
+            endOfText=text.substring(errorEndPoint);
+            newParagraph=false;
         }
         else{
-           startOfText="";
-           endOfText="";
-           newParagraph=true;
+            startOfText="";
+            endOfText="";
+            newParagraph=true;
         }
-        
         return newParagraph;
     }
 
+   
     private List<SingleProofreadingError> getNextError(){
 
         if(!errors.isEmpty())
             errors.remove(0);
-
         if(errors.isEmpty())
             return new ArrayList<SingleProofreadingError>();
-
-
-
-
-      return errors;
+        return errors;
     }
 
     public final void changeContext(final XComponentContext xCompContext) {
-      xContext = xCompContext;
+        xContext = xCompContext;
     }
 
     public static XSingleComponentFactory __getComponentFactory(
-      final String sImplName) {
-      SingletonFactory xFactory = null;
-      if (sImplName.equals(Main.class.getName())) {
-        xFactory = new SingletonFactory();
-      }
-      return xFactory;
+        final String sImplName) {
+        SingletonFactory xFactory = null;
+        if (sImplName.equals(Main.class.getName())) {
+            xFactory = new SingletonFactory();
+        }
+        return xFactory;
     }
 
     public static boolean __writeRegistryServiceInfo(final XRegistryKey regKey) {
@@ -231,40 +251,7 @@ public class Main extends WeakBase implements XJobExecutor,
         return true;
     }
 
-    public final ProofreadingResult doProofreading(final String docID,
-      final String paraText, final Locale locale, final int startOfSentencePos,
-      final int nSuggestedBehindEndOfSentencePosition,
-      final PropertyValue[] props) {
-
-      String text=paraText.replaceAll("[^\\sa-zA-Z0-9áúíÉéóÓÁÍÚ,.-]","*").trim();
-
-      /*if(text.equals(originalText)){
-          ignoreOnce=true;
-          changed=false;
-      }
-      else if((offset=text.length() - originalText.length()) !=0){
-          changed=true;
-          ignoreOnce=false;
-      }*/
-      final ProofreadingResult paRes = new ProofreadingResult();
-      try {
-        paRes.nStartOfSentencePosition = startOfSentencePos;
-        paRes.xProofreader = this;
-        paRes.aLocale = locale;
-        paRes.aDocumentIdentifier = docID;
-        paRes.aText = text;
-        paRes.aProperties = props;
-        paRes.aErrors=getError(docID, text);
-
-        originalText=text;
-         //paRes.aErrors=getDummyErrors(text);
-        return paRes;
-
-      } catch (final Throwable t) {
-       showError(t);
-      return paRes;
-    }
-  }
+    
     public SingleProofreadingError[] getDummyErrors(String paragraph){
         SingleProofreadingError[] errs = new SingleProofreadingError[3];
        // errs[0]=pre;
@@ -291,30 +278,7 @@ public class Main extends WeakBase implements XJobExecutor,
         return errs;
     }
 
-/*
- *   abstract method ignoreRule from XProofReader
- *    -- write selected word to .neamhshuim
- *
- */
 
-    @Override
-    public void ignoreRule(String word, Locale locale) throws IllegalArgumentException{
-       try{
-           PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("/home/ciaran/.neamhshuim", true)));
-           out.println(word);
-           out.close();
-
-       }catch(Exception e){
-           showError(e);
-       }
-       // Remove last error
-       errors.remove(0);
-       //remove any duplicates (to be ignored)
-       for (SingleProofreadingError error:errors){
-           if (error.aRuleIdentifier.equals(word))
-               errors.remove(error);
-       }
-    }
     
 /*
  *   abstract method resetIgnoreRules from XProofReader
@@ -382,7 +346,11 @@ public class Main extends WeakBase implements XJobExecutor,
  */
      @Override
     public void trigger(final String str){
-     
+     if(str.equals("eolas")){
+         DialogThread dt = new DialogThread(str);
+         dt.start();
+         
+     }
     }
 
 

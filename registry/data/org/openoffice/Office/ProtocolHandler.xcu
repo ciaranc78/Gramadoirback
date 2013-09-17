@@ -4,7 +4,7 @@
   <node oor:name="HandlerSet">
     <node oor:name="ga.gramadóir.AnGramadóir" oor:op="replace">
       <prop oor:name="Protocols" oor:type="oor:string-list">
-        <value>ga.gramadóir.angramadóir:*</value>
+        <value>ga.gramadóir.gramadóir:*</value>
       </prop>
     </node>
   </node>
