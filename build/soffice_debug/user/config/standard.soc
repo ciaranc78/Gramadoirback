@@ -172,13 +172,4 @@
   <draw:color draw:name="Chart 10" draw:color="#ff950e"/>
   <draw:color draw:name="Chart 11" draw:color="#c5000b"/>
   <draw:color draw:name="Chart 12" draw:color="#0084d1"/>
-
-  <!-- add Ubuntu colors -->
-  <draw:color draw:name="Ubuntu Orange" draw:color="#dd4814"/>
-  <draw:color draw:name="Ubuntu Warm Grey" draw:color="#aea79f"/>
-  <draw:color draw:name="Ubuntu Cool Grey" draw:color="#333333"/>
-  <draw:color draw:name="Ubuntu Light Aubergine" draw:color="#77216f"/>
-  <draw:color draw:name="Ubuntu Mid Aubergine" draw:color="#5e2750"/>
-  <draw:color draw:name="Ubuntu Dark Aubergine" draw:color="#2c001e"/>
-  <draw:color draw:name="Canonical Aubergine" draw:color="#772953"/>
 </office:color-table>

@@ -24,7 +24,11 @@ import com.sun.star.linguistic2.ProofreadingResult;
 import com.sun.star.linguistic2.SingleProofreadingError;
 import com.sun.star.linguistic2.XLinguServiceEventBroadcaster;
 import com.sun.star.linguistic2.XLinguServiceEventListener;
+import com.sun.star.linguistic2.XMeaning;
 import com.sun.star.linguistic2.XProofreader;
+import com.sun.star.linguistic2.XSpellAlternatives;
+import com.sun.star.linguistic2.XSpellChecker;
+import com.sun.star.linguistic2.XThesaurus;
 import com.sun.star.registry.XRegistryKey;
 import com.sun.star.task.XJobExecutor;
 import com.sun.star.uno.XComponentContext;
@@ -32,24 +36,25 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+//import java.util.Locale;
 import javax.swing.JOptionPane;
 
 
 public class Main extends WeakBase implements XJobExecutor,
     XServiceDisplayName, XServiceInfo, XProofreader,
-    XLinguServiceEventBroadcaster {
+    XLinguServiceEventBroadcaster, XSpellChecker, XThesaurus {
     
     private List<XLinguServiceEventListener> xEventListeners;
     private XComponentContext xContext;
     private static final String[] SERVICE_NAMES = {
+      "com.sun.star.linguistic2.Thesaurus",
       "com.sun.star.linguistic2.Proofreader",
       "ga.gramadóir.Main" };
-    private Gramadoir gram;
+    private Gramadoir gramadoir;
     private int offset=0;
     private boolean newParagraph=true;
-    private String previousDocID="";
+    private String previousDocID="1";
     private boolean changed=false;
-    private String originalText="";
     private String endOfText="";
     private String startOfText="";
     private Hashtable<Integer, String> ignoreOnceErrors=new Hashtable<Integer, String>();
@@ -57,13 +62,18 @@ public class Main extends WeakBase implements XJobExecutor,
     private SingleProofreadingError[] emptyError = new SingleProofreadingError[0];
     private SingleProofreadingError originalError = new SingleProofreadingError();
     private boolean ignoreRule=false;
-    private String oldSentence="";
+    private String oldText="";
+    private enum Status{CONTINUE, NEW_LINE, NEW_PAR, NEW_DOC};
+    private int beginOfLastError=0;
+    private int endOfLastError=0;
+    private boolean firstRun=true;
+
 
 
 
     private Locale[] SUPPORTED_LOCALES ={
-        new Locale("ga","IE","WIN"),
         new Locale("en","US","WIN"),
+        new Locale("ga","IE","POSIX"),
         new Locale("af","ZA","WIN"),
         new Locale("cy","PO","WIN"),
         new Locale("da","DK","WIN"),
@@ -82,6 +92,7 @@ public class Main extends WeakBase implements XJobExecutor,
     };
 
     private List<SingleProofreadingError> errors= new ArrayList<SingleProofreadingError>();
+    private int previousStartOfSentence=0;
 
 
    /*
@@ -91,42 +102,76 @@ public class Main extends WeakBase implements XJobExecutor,
     public Main(final XComponentContext xCompContext) {
       changeContext(xCompContext);
       xEventListeners = new ArrayList<XLinguServiceEventListener>();
-      gram = new Gramadoir();
+      gramadoir = new Gramadoir();
     }
 
     public Main(){
     }
-    public final ProofreadingResult doProofreading(final String docID,
+    public Status getStatus(final String docID, final String newText, final int startOfSentence){
+        if(!previousDocID.equals(docID)){
+            return Status.NEW_DOC;
+        }
+        else if(previousStartOfSentence!=startOfSentence){
+           return Status.NEW_LINE;
+        }
+        else
+            return Status.CONTINUE;
+    }
+   public XMeaning[] queryMeanings(
+            String aTerm, Locale aLocale,
+            PropertyValue[] aProperties )
+        throws com.sun.star.lang.IllegalArgumentException,
+               com.sun.star.uno.RuntimeException
+    {
+       // linguistic is currently not allowed to throw exceptions
+        // thus we return null fwhich means 'word cannot be looked up'
+        if (!hasLocale( aLocale ))
+            return null;
+
+        // get values of relevant properties that may be used.
+        //! The values for 'IsIgnoreControlCharacters' and 'IsUseDictionaryList'
+        //! are handled by the dispatcher! Thus there is no need to access
+        //! them here.
+
+        XMeaning[] aRes = null;
+
+        //!! This code needs to be replaced by code calling the actual
+        //!! implementation of your thesaurus
+        if (aTerm.equals( "baile" ) )
+        {
+            aRes = new XMeaning[]
+                {
+                    new XMeaning_impl( "a building where one lives",
+                            new String[]{ "teach", "cellar", "dwelling" } ),
+                    new XMeaning_impl( "a group of people sharing common ancestry",
+                            new String[]{ "family", "clan", "kindred" } ),
+                    new XMeaning_impl( "to provide with lodging",
+                            new String[]{ "room", "board", "put up" } )
+                };
+        }
+
+        return aRes;
+    }
+   public final ProofreadingResult doProofreading(final String docID,
             final String paraText, final Locale locale, final int startOfSentencePos,
                     final int nSuggestedBehindEndOfSentencePosition,
                             final PropertyValue[] props) {
+       final ProofreadingResult paRes = new ProofreadingResult();
 
-        String text=paraText.replaceAll("[^\\sa-zA-Z0-9áúíÉéóÓÁÍÚ,.-]","*").trim();
-        String sentence=text.substring(startOfSentencePos, nSuggestedBehindEndOfSentencePosition);
-        if(sentence.equals(oldSentence) && (ignoreRule==false)){
-            ignoreOnceErrors.put(originalError.nErrorStart, originalError.aRuleIdentifier);
-        }
-        oldSentence=sentence;
-        final ProofreadingResult paRes = new ProofreadingResult();
-        try {
             paRes.nStartOfSentencePosition = startOfSentencePos;
             paRes.xProofreader = this;
             paRes.aLocale = locale;
             paRes.aDocumentIdentifier = docID;
-            paRes.aText = text;
+            paRes.aText = paraText;
             paRes.aProperties = props;
-            paRes.aErrors=getError(docID, text);
-
-            originalText=text;
-            if(paRes.aErrors.length > 0)
-              originalError=paRes.aErrors[0];
-            ignoreRule=false;
+            paRes.nBehindEndOfSentencePosition=nSuggestedBehindEndOfSentencePosition;
+            paRes.aErrors=gramadoir.getError(paRes);
             return paRes;
-        } catch (final Throwable t) {
-             showError(t);
-             return paRes;
-        }
-    }
+
+   }
+
+   
+    
     /*
      *   abstract method ignoreRule from XProofReader
      *    -- write selected word to .neamhshuim
@@ -140,13 +185,7 @@ public class Main extends WeakBase implements XJobExecutor,
     }
 
 
-    private synchronized SingleProofreadingError[] getError(String docID, String text){
-       
-        errors=gram.checkGrammer(text, ignoreOnceErrors, ignoreRuleErrors);
-        SingleProofreadingError[] errorArray = new SingleProofreadingError[errors.size()];
-        errorArray=errors.toArray(errorArray);
-        return errorArray;
-    }
+   
 
     private boolean isNewParagraph(String text){
 
@@ -374,6 +413,14 @@ public class Main extends WeakBase implements XJobExecutor,
          showError(ex);
       }
       return new File(homeDir);
+    }
+
+    public boolean isValid(String arg0, Locale arg1, PropertyValue[] arg2) throws com.sun.star.lang.IllegalArgumentException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public XSpellAlternatives spell(String arg0, Locale arg1, PropertyValue[] arg2) throws com.sun.star.lang.IllegalArgumentException {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }
 
